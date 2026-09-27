@@ -4,24 +4,36 @@ import sbt.Keys._
 import sbtunidoc.BaseUnidocPlugin.autoImport.*
 import sbtunidoc.ScalaUnidocPlugin
 
-ThisBuild / scalaVersion := "3.9.0"
+// This build is developed as part of a larger private project,
+// which includes it by reference and from which it is automatically synchronised.
+// The project is named after the library, so that it doesn't clash with a host's own.
 
-scalacOptions ++= Seq(
+val scala3 = "3.8.4"
+
+ThisBuild / scalaVersion := scala3
+
+ThisBuild / scalacOptions ++= Seq(
   "-explain",
   "-explain-types",
   "-explain-cyclic",
+  "-deprecation",
+  "-feature",
+  "-unchecked",
+  "-Wunused:all",
 )
 
-lazy val `scala-library-template` = project
+/**
+  * Ranking items by judging them in pairs: the schedule of comparisons, the fit
+  * of an ability to every item, and its calibration against items of known
+  * score. Pure apart from the judge, which the host supplies in any effect.
+  */
+lazy val dike = project
   .in(file("."))
   .enablePlugins(ScalaUnidocPlugin)
   .settings(
-    packagePrefix                          := "com.alecdorrington",
-    libraryDependencies += "org.scalameta" %% "munit" % "1.3.6" % Test,
-
-    // Workaround for an sbt 2.0.x classloader bug where in-process test runs
-    // can't see Test-scoped dependencies (NoClassDefFoundError: munit/FunSuite).
-    Test / fork := true,
-    ScalaUnidoc / unidoc / scalacOptions ++=
-      Seq("-project", "Scala Library Template"),
+    name          := "dike",
+    packagePrefix := "com.alecdorrington.dike",
+    Dependencies.cats,
+    Dependencies.munit,
+    ScalaUnidoc / unidoc / scalacOptions ++= Seq("-project", "Dike"),
   )
