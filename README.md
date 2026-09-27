@@ -1,156 +1,121 @@
 <div align="center">
-  <h1>📚 Scala Library Template</h1>
-  <p>A reusable template for Scala libraries deployed to <a href="https://central.sonatype.com/">Maven Central</a>.</p>
-</div>
 
-<br><br>
+  <h1>⚖️ Dike</h1>
+  <p>Ranking by pairwise comparison in <a href="https://www.scala-lang.org/">Scala</a>, with any judge, from a language model to a match.</p>
 
-> "Perfection is achieved not when there is nothing more to add, but when there is nothing left to take away." — Antoine de Saint-Exupéry.
-
-<br>
-
-## 📋 What's included?
-
-1. Everything from [Scala Library Config](https://github.com/SgtSwagrid/scala-library-config), including reasonable [Scalafmt](https://scalameta.org/scalafmt/) settings, CI piplines for build integrity, and some IDE config.
-2. Automatic deployment to Maven Central using [sbt-ci-release](https://github.com/sbt/sbt-ci-release).
-3. Example build configuration and setup instructions.
-
-## 🔨 How to use this template
-
-### 1. Create your repository
-
-Click '[**Use this template**](https://github.com/new?template_name=scala-library-template&template_owner=SgtSwagrid)' on GitHub, and follow the instructions to create a new repository for your library.
-All files herein will be copied as-is.
-
-### 2. Configure [build.sbt](build.sbt) and [release.sbt](release.sbt)
-
-Replace every placeholder with real values for your project.
-The sbt settings necessary for publishing are defined by `sbt-ci-release` and are documented [here](https://github.com/sbt/sbt-ci-release?tab=readme-ov-file#sbt).
-
-#### Settings to update in `release.sbt`:
-
-| Name | Purpose | Example |
-| ---- | ------- | ------- |
-| `organization` | Your organisation's package namespace. | `org.nohungrydogs` |
-| `organizationName` | Your organisation's name. | `No Hungry Dogs` |
-| `organizationHomepage` | Your organisation's website. | `nohungrydogs.org` |
-| [`versionScheme`](https://www.scala-sbt.org/1.x/docs/Publishing.html#Version+scheme) | What does the version number say about binary compatibility? | `strict` |
-| `licenses` | The license under which your library is released. Update [`LICENSE.md`](LICENSE.md) to match. | [`MIT`](https://opensource.org/license/mit) |
-| `developers` | The individual developers who contribute to your library. | `SgtSwagrid` |
-
-#### Settings to update in `build.sbt`:
-
-| Name | Purpose | Example |
-| ---- | ------- | ------- |
-| `packagePrefix` | IntelliJ's implicit package prefix for all code files. | `org.nohungrydogs` |
-| Name of subproject (following `lazy val`) | Your library's name, or the name of a particular module. | `dog-food-finder` |
-
-#### Multiple modules
-
-Each subproject listed in `build.sbt` is published as a separate artefact on Maven (albeit under the same versioning),
-which is useful if you want a modular design whereby downstream users need not include all facets of your library.
-Typically in this case you'll introduce one top-level subdirectory for each subproject.
-
-#### A note on sbt settings
-
-Settings are read from every `.sbt` file in the project root.
-It doesn't matter what they are called, other than that sbt simply concatenates their contents in alphabetical order of their names.
-A division between build information and publishing information is introduced for convenience.
-
-### 3. Set up your Maven Central account
-
-1. Create an account on [Maven Central](https://central.sonatype.com) to enable publishing, if you don't already have one.
-2. [Register](https://central.sonatype.com/publishing/namespaces) your namespace (e.g. `org.nohungrydogs`).
-   This should match the `organization` setting in `release.sbt`.
-3. [Generate](https://central.sonatype.com/usertoken) a user token.
-   This will give you a username and password, which you can add as repository secrets (see [step 5](#5-add-repository-secrets)).
-
-### 4. Generate a PGP key for signing releases
-
-Execute the following on your local machine to generate a [PGP](https://en.wikipedia.org/wiki/Pretty_Good_Privacy) key:
-
-```bash
-# Generate a new PGP key, making sure to remember your passphrase:
-gpg --gen-key
-
-# Expose the secret key in base64, using the public key provided by the above:
-gpg --armor --export-secret-keys <PUBLIC_KEY> | base64
-
-# Upload the public key to a keyserver:
-gpg --keyserver keyserver.ubuntu.com --send-keys <PUBLIC_KEY>
-```
-
-### 5. Add repository secrets
-
-Add the following secrets to your repository on GitHub, to allow publishing as part of an automated workflow:
-
-| Secret                    | Value                                                                                                               |
-|---------------------------|---------------------------------------------------------------------------------------------------------------------|
-| `SONATYPE_USERNAME`       | Username from Maven user token in [step 3](#3-set-up-your-maven-central-account).                                   |
-| `SONATYPE_PASSWORD`       | Password from Maven user token in [step 3](#3-set-up-your-maven-central-account).                                   |
-| `PGP_SECRET`              | Base64-encoded PGP private key from [step 4](#4-generate-a-pgp-key-for-signing-releases).                           |
-| `PGP_PASSPHRASE`          | Passphrase used when generating the PGP key in [step 4](#4-generate-a-pgp-key-for-signing-releases).                |
-| `GH_TOKEN`                | Your GitHub [PAT](https://github.com/settings/personal-access-tokens) with administrator to access your repository. |
-| `CLAUDE_CODE_OAUTH_TOKEN` | API key from [Claude](https://claude.com/product/claude-code) for agentic workflows (optional).                     |
-
-Secrets can be added from the GitHub web interface by navigating as follows from your repository's page:
-
-> **Settings → Secrets and variables → Actions**
-
-### 6. Publish the Scaladoc documentation with Github Pages
-
-This project is configured to automatically extract and publish all [Scaladoc](https://docs.scala-lang.org/style/scaladoc.html) content
-as a stand-alone website using [GitHub Pages](https://pages.github.com/).
-
-All you need to do is configure GitHub to deploy the site from the branch named `docs`,
-which will be automatically created following the first release.
-You can find this setting under:
-
-> **Settings → Pages**
-
-## 👮‍♂️ License
-
-The included MIT license should be considered only as part of the template, and is not binding.
-This repository is hereby released to the public domain, to be used freely.
-In particular, and contra [LICENSE.md](LICENSE.md), you may remove the license text from copies.
-
-## 🤝 Contributing
-
-[CONTRIBUTING.md](CONTRIBUTING.md) is also part of the template, and does not _necessarily_ apply to contributions to the template itself.
-The most important thing to know is that many of the configuration files are automatically synced from [Scala Config](https://github.com/SgtSwagrid/scala-config), and should be updated there rather than here.
-
-## 👁️ See also
-
-- Check out [Scala Website Template](https://github.com/SgtSwagrid/scala-website-template) for a similar template to quickly start a new full stack website in Scala.
-- This project is configured by [Scala Library Config](https://github.com/SgtSwagrid/scala-library-config).
-
-<br/><br/><br/><br/>
-<h3 align="center">⬆️ Delete • Keep ⬇️</h3>
-<br/><br/><br/><br/>
-
-<div align="center">
-
-  <h1>✨ My Library</h1>
-  <p>A very cool Scala library that does something great.</p>
-  
-  <!-- Update the following URLS to show live build status in your README. -->
   <span>
-    <a href="https://github.com/SgtSwagrid/scala-library-template/actions/workflows/build-integrity.yml"><img src="https://github.com/SgtSwagrid/scala-library-template/actions/workflows/build-integrity.yml/badge.svg" alt="Build status" /></a>
-    <a href="https://search.maven.org/artifact/com.alecdorrington/scala-library-template_3"><img src="https://img.shields.io/maven-central/v/com.alecdorrington/scala-library-template_3.svg" alt="Maven Central" /></a>
-    <a href="https://alecdorrington.com/scala-library-template"><img src="https://img.shields.io/badge/docs-latest-blue.svg" alt="Documentation" /></a>
+    <a href="https://github.com/SgtSwagrid/Dike/actions/workflows/build-integrity.yml"><img src="https://github.com/SgtSwagrid/Dike/actions/workflows/build-integrity.yml/badge.svg" alt="Build status" /></a>
+    <a href="https://search.maven.org/artifact/com.alecdorrington/dike_3"><img src="https://img.shields.io/maven-central/v/com.alecdorrington/dike_3.svg" alt="Maven Central" /></a>
+    <a href="https://alecdorrington.com/Dike"><img src="https://img.shields.io/badge/docs-latest-blue.svg" alt="Documentation" /></a>
   </span>
-  
+
 </div>
+
+> [!WARNING]
+> Dike is in beta. It is young, it has one user, and anything may change between minor versions.
+
+Ask a judge what something is worth and the answer drifts. Ask it which of two things is the better and the answer holds.
+This is as true of a large language model as of a person, so a ranking fitted from many such judgements is far
+steadier than the scores it replaces. Dike does everything but the judging: it chooses which pairs to compare,
+asks both ways round to cancel out any bias for what came first, fits an ability to every item,
+and calibrates the result against items whose scores you already know.
+You supply the judge, as a function in whatever effect you like.
+It is built on [Cats](https://typelevel.org/cats/), and has no other dependencies.
+
+Named for [Dike](https://en.wikipedia.org/wiki/Dike_(mythology)), goddess of justice and of fair judgement.
 
 ## ⬇️ Installation
 
-Add the following dependency to your `build.sbt`:
+Add the following to your `build.sbt`:
 
-<!-- Replace with the details for your own library. -->
 ```scala
-libraryDependencies += "com.alecdorrington" %% "scala-library-template" % "0.2.1"
+libraryDependencies += "com.alecdorrington" %% "dike" % "0.1.0"
 ```
+
+Compiled with Scala `3.8.4`, with no intention to explicitly support older versions. JVM only.
+
+## 🚀 Usage
+
+Describe what to rank as a [`Contest`](src/main/scala/Contest.scala), then run it with a [`Judge`](src/main/scala/Judge.scala):
+a function from two items, in the order they are presented, to the [`Verdict`](src/main/scala/Verdict.scala) on which is better.
+
+```scala
+import cats.effect.IO
+import com.alecdorrington.dike.{Anchor, Contest, Judge, Verdict}
+
+val judge: Judge[IO, Book] = (first, second) => ??? // Verdict.First, Verdict.Second or Verdict.Tie.
+
+val ranking = Contest(
+  items = books,
+  anchors = List(Anchor(dull, 2), Anchor(decent, 5), Anchor(classic, 9)),
+  rounds = 2,
+).rank(judge)
+```
+
+The result is a [`Ranking`](src/main/scala/Ranking.scala): one [`Rating`](src/main/scala/Ranking.scala) per item,
+in the order you gave them (or strongest first, with `ranked`), each with
+
+- a `score`, on the same scale as the anchors' scores,
+- an `elo`, the fitted ability on the [Elo](https://en.wikipedia.org/wiki/Elo_rating_system) scale, where a lead of 400 points means winning nine comparisons in ten,
+- and its `wins`, counted in comparisons.
+
+It also says how many `judgements` the fit rests on, the `failures` of any which were left out, and the `agreement`
+of the anchors' own scores with the order the judge put them in. A low agreement means the anchors are scored inconsistently, or that the judge
+is not judging what their scores measure; either way, the scores should not be trusted.
+
+A judge may be anything which decides between two items: a person, a match played between them, or a language model:
+
+```scala
+import com.alecdorrington.iris.{LlmClient, Prompt}
+
+def judge(client: LlmClient[IO]): Judge[IO, String] = (first, second) =>
+  client
+    .complete(Prompt(s"Which blurb makes you want to read the book more?\n\nA: $first\n\nB: $second\n\nAnswer A, B or TIE."))
+    .map(_.text.trim match
+      case "A" => Verdict.First
+      case "B" => Verdict.Second
+      case _   => Verdict.Tie)
+```
+
+Judgements are made in parallel wherever none waits on another's verdict, so a judge which costs something per call
+should limit for itself how many run at once. A judgement which fails, whether in `F` or by throwing, is left out
+of the ranking and reported in its `failures`, rather than failing the whole contest.
+
+## 🧭 How it works
+
+1. **Both ways round.** Every pairing is judged twice, once with each item presented first.
+   Agreeing verdicts are a win; contradictory ones are a draw, which is the signal that two items are too alike to tell apart.
+   A judge which simply prefers whatever it sees first therefore favours nothing.
+2. **Round robin.** The items are paired with one another over `rounds` rounds of a [round-robin](src/main/scala/RoundRobin.scala)
+   (circle method), so that every item meets a different opponent each round, and comparisons are spread evenly
+   rather than leaving some items barely compared. `rounds = 0` skips this.
+3. **The ladder.** The anchors are sorted by score into a ladder, each rung compared with the next to settle the ladder's
+   own order. Each item then climbs the ladder by binary search, so placing it costs only a handful of comparisons,
+   however long the ladder is.
+4. **The fit.** All of these comparisons are fitted together as one body of evidence by the
+   [Bradley-Terry](src/main/scala/BradleyTerry.scala) model, by maximum likelihood (Hunter's MM algorithm),
+   with a weak prior of imagined draws, so that undefeated items and disconnected fields stay finite.
+5. **Calibration.** Each item's score is read off the line between the anchors it fell among, extrapolated past the
+   ends of the ladder. With fewer than two anchors, which cannot say what any ability is worth, each item is instead
+   scored by its standing among the others, read off the contest's normal `curve`.
+   So an anchored field of uniformly strong items is free to score uniformly well, whereas a curve forces every field
+   into the same shape.
+
+Scores are not bounded: clamp them to your scale's range if it has one.
+Each step is also available on its own, as [`BradleyTerry`](src/main/scala/BradleyTerry.scala),
+[`RoundRobin`](src/main/scala/RoundRobin.scala), [`Calibration`](src/main/scala/Calibration.scala),
+[`Curving`](src/main/scala/Curving.scala) and [`Gaussian`](src/main/scala/Gaussian.scala).
+
+## 🤝 Contributing
+
+Dike is developed as part of a larger private project, of which this repository is an automatically synchronised
+mirror (by [GitHub Graph](https://github.com/SgtSwagrid/github-graph)), so changes made here directly would be overwritten.
+Issues are very welcome; for anything more, please open an issue first.
 
 ## 👁️ See also
 
+- [Iris](https://github.com/SgtSwagrid/Iris), a sibling, a provider-agnostic client for large language models, and so for judges.
+- [Hecate](https://github.com/SgtSwagrid/Hecate), a sibling, for user accounts, sessions, groups and permissions.
+- [Eunomia](https://github.com/SgtSwagrid/Eunomia), a sibling, for filtering, ordering and paging lists.
+- [qr4s](https://github.com/SgtSwagrid/qr4s), a sibling, for generating QR codes, on the JVM and in the browser.
 - This library was made using [Scala Library Template](https://github.com/SgtSwagrid/scala-library-template).

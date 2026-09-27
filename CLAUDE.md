@@ -11,7 +11,48 @@ Keep it concise and actionable.
 
 ## Project overview
 
-This is a Scala library that does ...
+This is Dike, a Scala 3 library for ranking items by judging them in pairs, built on Cats alone. It is in beta.
+
+It is a single JVM module in `com.alecdorrington.dike`. A `Contest` (items, `Anchor`s of known score, round-robin
+`rounds`, and the `Curve` to fall back on) is run by `Contest.rank` with a `Judge[F, A]`, `(A, A) => F[Verdict]`, for
+any `F` with `MonadThrow` and `Parallel`, giving a `Ranking` of `Rating`s. Internally, a `Field` indexes the players
+(the items in the order given, then the anchors in score order), a `Tournament` makes the judgements (the `Field.schedule`
+of round-robin pairings and adjacent rungs, then each item's binary-search climb, in parallel), each pairing a `Duel`
+judged both ways round, and `Ranking.fitted` fits `BradleyTerry` abilities and reads scores off `Calibration`, else
+`Curving`. The maths objects (`BradleyTerry`, `RoundRobin`, `Calibration`, `Curving`, `Gaussian`) are public and
+usable alone.
+
+- The library never judges. What a judge asks, of whom, and at what cost belongs to the host, and so do the choice of
+  items and anchors, limits on how many, and whatever the scores mean. Keep prompts, parsing of a model's answer,
+  throttling and retries out.
+- Every pairing is judged both ways round (`Duel`), each judgement weighing `Duel.judgement` (half a comparison); a
+  draw is two quarter-weight outcomes. Never judge a pairing one way only: that is what cancels a judge's preference
+  for whatever it saw first.
+- A judge's failure, raised in `F` or thrown, must never fail the contest: `Tournament.ask` catches both, and the error
+  lands in `Ranking.failures`. Whether a ranking with failures is good enough is the host's call.
+- Scores are unbounded (`Calibration.score` extrapolates past the ladder, `Curving.score` reads a curve with no ends).
+  Hosts clamp to their own scales; don't add a range here.
+- Indices in `BradleyTerry.Outcome` are `Field` player indices; they never leave the library. The public API speaks in
+  items, and `Ranking.ratings` keeps the items' order so that hosts can zip their own keys back on.
+
+See [README.md](README.md) for usage.
+
+### Where this code lives
+
+This repository is a mirror. The library is developed inside a larger private project, beneath `dike/`, and every file
+here is copied from there by [GitHub Graph](https://github.com/SgtSwagrid/github-graph) whenever that project's `main`
+changes, overwriting whatever is here. So make changes there, never here. The shared configuration (workflows, Scalafmt, IDE settings, `project/plugins-*.sbt`) comes from further upstream still, in
+[Scala Library Config](https://github.com/SgtSwagrid/scala-library-config), which syncs into the private project's `dike/` first.
+`build.sbt`, `release.sbt`, `project/Dependencies.scala`, `README.md` and this file belong to the library.
+
+### Build
+
+- The root project `dike` is the library itself, published as `dike`. Its id is the library's name because the private
+  project includes this build by reference (`ProjectRef(file("dike"), "dike")`), alongside projects of its own.
+- The library must never depend on anything in the project that includes it.
+- Cats Effect is a test dependency only: the suites judge in `IO` (`munit-cats-effect`), but the library asks nothing
+  of `F` beyond `MonadThrow` and `Parallel`.
+- Versions come from git tags (`sbt-ci-release`); publishing a GitHub release publishes to Maven Central.
 
 ## Instructions
 
