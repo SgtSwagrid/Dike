@@ -1,25 +1,56 @@
 package com.alecdorrington.dike
 
 /**
-  * Normalisation of scores onto a [[Curve]] by rank. A value is ranked among a
-  * sample of comparable values, and the score at the same percentile of the
-  * curve is given in its place. Only the order of the sample survives, so
-  * values given by different judges become comparable however harsh or generous
-  * each of them is.
+  * Normalisation of scores onto a [[Curve]] by rank: a value is ranked among a
+  * sample, and replaced by the score at the same percentile of the curve. Only
+  * the sample's order survives, so values from harsh and generous judges become
+  * comparable.
   */
 object Curving:
 
   /**
-    * The mid-rank (Hazen) percentile of a value within a sample that contains
-    * it. Ties share the ranks they span, so the percentile lies strictly
-    * between `0` and `1`, and the best and worst of a sample are never given
-    * the unreachable extremes of a curve.
+    * Normalises a value onto a curve by its standing within a sample: ranks it
+    * by [[percentile]], then reads the curve there by [[score]].
+    *
+    * @param sample
+    *   The sample, which must contain the value.
+    *
+    * @param value
+    *   The value to normalise.
+    *
+    * @param curve
+    *   The curve to read the score off.
+    *
+    * @return
+    *   An unbounded score, for the host to clamp to its scale.
+    */
+  def normalised
+    (
+      sample: Seq[Double],
+      value: Double,
+      curve: Curve,
+    )
+    : Double = score(percentile(sample, value), curve)
+
+  /**
+    * Computes the mid-rank (Hazen) percentile of a value within a sample. Ties
+    * share the ranks they span.
+    *
+    * @param sample
+    *   The sample, which must contain the value.
+    *
+    * @param value
+    *   The value to rank.
+    *
+    * @return
+    *   A percentile strictly between `0` and `1`, so never the unreachable
+    *   extremes of a curve.
     */
   def percentile(sample: Seq[Double], value: Double): Double =
     (sample.count(_ < value) + sample.count(_ == value) / 2.0) / sample.size
 
   /**
-    * The score found at the given percentile of a curve.
+    * Reads the score at a percentile of a curve.
     *
     * @param percentile
     *   The percentile, strictly between `0` and `1`.
@@ -28,8 +59,8 @@ object Curving:
     *   The curve to read the score off.
     *
     * @return
-    *   A score, unbounded, as a curve has no ends. Clamp it to the range of the
-    *   scale being read, if it has one.
+    *   An unbounded score, to be clamped to the range of its scale if it has
+    *   one.
     */
   def score(percentile: Double, curve: Curve): Double = curve.mean +
     Gaussian.quantile(percentile) * curve.deviation

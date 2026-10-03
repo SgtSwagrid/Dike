@@ -1,6 +1,6 @@
 package com.alecdorrington.dike
 
-/** Which of two items a [[Judge]] found the better, if either. */
+/** A [[Judge]]'s finding of which of two items is the better, if either. */
 enum Verdict:
 
   /** The item presented first is the better. */

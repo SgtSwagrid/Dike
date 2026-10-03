@@ -15,22 +15,27 @@ This is Dike, a Scala 3 library for ranking items by judging them in pairs, buil
 
 It is a single JVM module in `com.alecdorrington.dike`. A `Contest` (items, `Anchor`s of known score, round-robin
 `rounds`, and the `Curve` to fall back on) is run by `Contest.rank` with a `Judge[F, A]`, `(A, A) => F[Verdict]`, for
-any `F` with `MonadThrow` and `Parallel`, giving a `Ranking` of `Rating`s. Internally, a `Field` indexes the players
-(the items in the order given, then the anchors in score order), a `Tournament` makes the judgements (the `Field.schedule`
-of round-robin pairings and adjacent rungs, then each item's binary-search climb, in parallel), each pairing a `Duel`
-judged both ways round, and `Ranking.fitted` fits `BradleyTerry` abilities and reads scores off `Calibration`, else
-`Curving`. The maths objects (`BradleyTerry`, `RoundRobin`, `Calibration`, `Curving`, `Gaussian`) are public and
-usable alone.
+any `F` with `MonadThrow` and `Parallel`, giving a `Ranking` of `Rating`s, `Contest.presentedFirst` counts the judgements
+sure to present each player first (`Field.certain`: the schedule and each item's first rung, `Field.middle`), and
+`Contest.maxJudgements` prices one before
+it runs (`Field.maxJudgements`: the schedule and each item's longest climb, `Field.longestClimb`, each judged
+`Comparison.sides` times; keep it in step with `Judging` whenever what is judged changes). Internally, a `Field`
+indexes the players (the items in the order given, then the anchors in score order), a `Judging` makes the judgements
+(the `Field.schedule` of round-robin pairings and adjacent rungs, then each item's binary-search climb, in parallel),
+each pairing a `Comparison` judged both ways round, and `Ranking.of` fits `BradleyTerry` abilities and reads scores
+off `Calibration`, else normalises each item's standing onto the curve (`Curving.normalised`: a value ranked among a
+sample, then the curve read at its percentile). The maths objects (`BradleyTerry`, `RoundRobin`, `Calibration`, `Curving`,
+`Gaussian`) are public and usable alone.
 
 - The library never judges. What a judge asks, of whom, and at what cost belongs to the host, and so do the choice of
   items and anchors, limits on how many, and whatever the scores mean. Keep prompts, parsing of a model's answer,
   throttling and retries out.
-- Every pairing is judged both ways round (`Duel`), each judgement weighing `Duel.judgement` (half a comparison); a
-  draw is two quarter-weight outcomes. Never judge a pairing one way only: that is what cancels a judge's preference
-  for whatever it saw first.
-- A judge's failure, raised in `F` or thrown, must never fail the contest: `Tournament.ask` catches both, and the error
+- Every pairing is judged both ways round (`Comparison`), each judgement weighing `Comparison.judgementWeight` (half a
+  comparison); a draw is two quarter-weight outcomes. Never judge a pairing one way only: that is what cancels a
+  judge's preference for whatever it saw first.
+- A judge's failure, raised in `F` or thrown, must never fail the contest: `Judging.ask` catches both, and the error
   lands in `Ranking.failures`. Whether a ranking with failures is good enough is the host's call.
-- Scores are unbounded (`Calibration.score` extrapolates past the ladder, `Curving.score` reads a curve with no ends).
+- Scores are unbounded (`Calibration.score` extrapolates past the ladder, `Curving.normalised` reads a curve with no ends).
   Hosts clamp to their own scales; don't add a range here.
 - Indices in `BradleyTerry.Outcome` are `Field` player indices; they never leave the library. The public API speaks in
   items, and `Ranking.ratings` keeps the items' order so that hosts can zip their own keys back on.
@@ -73,6 +78,11 @@ changes, overwriting whatever is here. So make changes there, never here. The sh
 ### Code Style
 
 - You must read the [Code Style Guidelines](docs/STYLE_GUIDE.md).
+- Document every public type and member: a summary, then `@param` for each explicit parameter,
+  `@tparam` for each type parameter, and `@return` for any result but `Unit`, each one short
+  sentence. Summaries read: types "A ...", values "The ...", Booleans "Whether ...", methods a
+  third-person verb ("Sends ..."), never "Returns ...". Private members get a comment only for a
+  non-obvious contract or gotcha, usually in one sentence.
 
 ### Pull Requests
 
