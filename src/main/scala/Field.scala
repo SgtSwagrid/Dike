@@ -3,57 +3,72 @@ package com.alecdorrington.dike
 import com.alecdorrington.dike.Calibration.Knot
 
 /**
-  * The players of a [[Contest]], indexed as the comparisons between them are
-  * recorded: first the items, in the order given, then the anchors up the
-  * ladder, from the lowest score to the highest.
-  *
-  * @param contest
-  *   The contest the players are taking part in.
+  * The players of a [[Contest]], indexed first by the items, in the order
+  * given, then by the anchors up the ladder, lowest score first.
   */
 private[dike] final case class Field[A](contest: Contest[A]):
 
-  /** The anchors in score order, lowest first, as the ladder is climbed. */
   val ladder: Vector[Anchor[A]] = contest.anchors.sortBy(_.score).toVector
 
-  /** Every player, the items first and then the anchors up the ladder. */
   val players: Vector[A] = contest.items.toVector ++ ladder.map(_.item)
 
   /** The number of items to rank, which are the first of the players. */
-  val size: Int = contest.items.size
+  val items: Int = contest.items.size
 
-  /** The player standing on the given rung of the ladder. */
-  def rung(step: Int): Int = size + step
+  /** The player on the given rung of the ladder. */
+  def onRung(rung: Int): Int = items + rung
 
   /** The pairings to judge whatever any verdict turns out to be. */
   def schedule: List[(Int, Int)] = peerings ++ rungs
 
-  /**
-    * The pairings of the items with one another. Each round pairs every item
-    * with a different opponent, so that the comparisons are spread evenly over
-    * the field rather than leaving some items barely compared.
-    */
   def peerings: List[(Int, Int)] = RoundRobin
-    .pairings(size, contest.rounds)
+    .pairings(items, contest.rounds)
     .toList
 
   /**
-    * Each anchor paired with the one scored next above it. Judging the ladder
-    * against itself settles the order of its own rungs, which the items'
-    * results alone need not pin down: were every item to beat every anchor,
-    * nothing would distinguish one anchor from another, and the scores they are
-    * meant to calibrate could not be read between them.
+    * Each anchor paired with the next one up. Without these, items that beat
+    * every anchor would leave the anchors' abilities indistinguishable, and
+    * calibration impossible.
     */
   def rungs: List[(Int, Int)] =
-    val climbed = ladder.indices.map(rung)
+    val climbed = ladder.indices.map(onRung)
     climbed.zip(climbed.drop(1)).toList
 
-  /** The anchors as reference points, at the abilities fitted to them. */
+  def maxJudgements: Int = Comparison.sides *
+    (schedule.size + items * Field.longestClimb(ladder.size))
+
+  /**
+    * The pairings judged whatever the verdicts: the schedule, and each item
+    * against its climb's first rung.
+    */
+  def certain: List[(Int, Int)] =
+    if ladder.isEmpty then schedule
+    else
+      val start = onRung(Field.middle(ladder.indices))
+      schedule ++ List.range(0, items).map(_ -> start)
+
+  def presentedFirst: Map[A, Int] = certain
+    .flatMap((first, second) => List(first, second))
+    .groupMapReduce(players)(_ => 1)(_ + _)
+
   def knots(abilities: Vector[Double]): List[Knot] = ladder
     .indices
-    .map(step =>
+    .map(rung =>
       Knot(
-        abilities(rung(step)),
-        ladder(step).score,
+        abilities(onRung(rung)),
+        ladder(rung).score,
       ),
     )
     .toList
+
+private[dike] object Field:
+
+  /**
+    * The most rungs a binary search compares with on a ladder of the given
+    * height, each verdict leaving at most the longer half.
+    */
+  def longestClimb(rungs: Int): Int =
+    if rungs <= 0 then 0 else 1 + longestClimb(rungs / 2)
+
+  /** The rung a climb over the given range of the ladder is compared with next. */
+  def middle(rungs: Range): Int = rungs(rungs.size / 2)

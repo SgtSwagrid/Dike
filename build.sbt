@@ -4,11 +4,7 @@ import sbt.Keys._
 import sbtunidoc.BaseUnidocPlugin.autoImport.*
 import sbtunidoc.ScalaUnidocPlugin
 
-// This build is developed as part of a larger private project,
-// which includes it by reference and from which it is automatically synchronised.
-// The project is named after the library, so that it doesn't clash with a host's own.
-
-val scala3 = "3.8.4"
+val scala3 = "3.9.0"
 
 ThisBuild / scalaVersion := scala3
 
@@ -22,11 +18,8 @@ ThisBuild / scalacOptions ++= Seq(
   "-Wunused:all",
 )
 
-/**
-  * Ranking items by judging them in pairs: the schedule of comparisons, the fit
-  * of an ability to every item, and its calibration against items of known
-  * score. Pure apart from the judge, which the host supplies in any effect.
-  */
+// Named after the library so as not to clash with the projects of a build that
+// includes this one by reference.
 lazy val dike = project
   .in(file("."))
   .enablePlugins(ScalaUnidocPlugin)

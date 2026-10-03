@@ -4,25 +4,26 @@ package com.alecdorrington.dike
 object Gaussian:
 
   /**
-    * The quantile function (inverse cumulative distribution function) of the
-    * standard normal distribution, computed with Acklam's rational
-    * approximation (relative error below `1.15e-9`).
+    * Computes the quantile function (inverse cumulative distribution function)
+    * of the standard normal distribution by Acklam's rational approximation,
+    * with relative error below `1.15e-9`.
     *
-    * @param p
-    *   A probability strictly between `0` and `1`.
+    * @param probability
+    *   The probability, strictly between `0` and `1`, or the call throws.
     *
     * @return
-    *   A z-score: the value below which a standard normal variable falls with
-    *   probability `p`.
+    *   A z-score below which a standard normal variable falls with the given
+    *   probability.
     */
-  def quantile(p: Double): Double =
+  def quantile(probability: Double): Double =
     require(
-      p > 0 && p < 1,
-      s"Probability out of range: $p.",
+      probability > 0 && probability < 1,
+      s"Probability out of range: $probability.",
     )
-    if p < low then tail(p) else if p > 1 - low then -tail(1 - p) else centre(p)
+    if probability < low then tail(probability)
+    else if probability > 1 - low then -tail(1 - probability)
+    else centre(probability)
 
-  /** The boundary between the central region and the tails. */
   private val low = 0.02425
 
   // Coefficients of Acklam's approximation, leading terms first.
@@ -48,17 +49,14 @@ object Gaussian:
     3.754408661907416e+00,
   )
 
-  /** The approximation on the central region `[low, 1 - low]`. */
   private def centre(p: Double): Double =
     val q = p - 0.5
     val r = q * q
-    poly(a, r) * q / (poly(b, r) * r + 1)
+    polynomial(a, r) * q / (polynomial(b, r) * r + 1)
 
-  /** The approximation on the lower tail `(0, low)`. */
   private def tail(p: Double): Double =
     val q = math.sqrt(-2 * math.log(p))
-    poly(c, q) / (poly(d, q) * q + 1)
+    polynomial(c, q) / (polynomial(d, q) * q + 1)
 
-  /** Evaluates a polynomial by Horner's method, leading coefficient first. */
-  private def poly(coefficients: Vector[Double], x: Double): Double =
+  private def polynomial(coefficients: Vector[Double], x: Double): Double =
     coefficients.reduce(_ * x + _)
