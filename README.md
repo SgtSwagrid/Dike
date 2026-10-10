@@ -32,7 +32,7 @@ Add the following to your `build.sbt`:
 libraryDependencies += "com.alecdorrington" %% "dike" % "0.1.0"
 ```
 
-Compiled with Scala `3.8.4`, with no intention to explicitly support older versions. JVM only.
+Compiled with Scala `3.9.0`, with no intention to explicitly support older versions. JVM only.
 
 ## 🚀 Usage
 
@@ -78,7 +78,11 @@ def judge(client: LlmClient[IO]): Judge[IO, String] = (first, second) =>
 ```
 
 Judgements are made in parallel wherever none waits on another's verdict, so a judge which costs something per call
-should limit for itself how many run at once. A judgement which fails, whether in `F` or by throwing, is left out
+should limit for itself how many run at once. Such a judge can also be priced before the contest runs: `maxJudgements`
+says the most judgements a contest may ask for, which it reaches only when every item climbs the ladder as far as it can.
+A judge which keeps what it reads of the item presented first, as a language model's prompt cache does, can ask
+`presentedFirst` how many judgements are sure to present each item and anchor first, and so which it will read again.
+A judgement which fails, whether in `F` or by throwing, is left out
 of the ranking and reported in its `failures`, rather than failing the whole contest.
 
 ## 🧭 How it works
@@ -105,6 +109,7 @@ Scores are not bounded: clamp them to your scale's range if it has one.
 Each step is also available on its own, as [`BradleyTerry`](src/main/scala/BradleyTerry.scala),
 [`RoundRobin`](src/main/scala/RoundRobin.scala), [`Calibration`](src/main/scala/Calibration.scala),
 [`Curving`](src/main/scala/Curving.scala) and [`Gaussian`](src/main/scala/Gaussian.scala).
+`Curving.normalised`, for one, places any value on a curve by its standing within a sample, as the contest places its items.
 
 ## 🤝 Contributing
 
