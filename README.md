@@ -4,9 +4,9 @@
   <p>Ranking by pairwise comparison in <a href="https://www.scala-lang.org/">Scala</a>, with any judge, from a language model to a match.</p>
 
   <span>
-    <a href="https://github.com/SgtSwagrid/Dike/actions/workflows/build-integrity.yml"><img src="https://github.com/SgtSwagrid/Dike/actions/workflows/build-integrity.yml/badge.svg" alt="Build status" /></a>
+    <a href="https://github.com/SgtSwagrid/dike/actions/workflows/build-integrity.yml"><img src="https://github.com/SgtSwagrid/dike/actions/workflows/build-integrity.yml/badge.svg" alt="Build status" /></a>
     <a href="https://search.maven.org/artifact/com.alecdorrington/dike_3"><img src="https://img.shields.io/maven-central/v/com.alecdorrington/dike_3.svg" alt="Maven Central" /></a>
-    <a href="https://alecdorrington.com/Dike"><img src="https://img.shields.io/badge/docs-latest-blue.svg" alt="Documentation" /></a>
+    <a href="https://alecdorrington.com/dike"><img src="https://img.shields.io/badge/docs-latest-blue.svg" alt="Documentation" /></a>
   </span>
 
 </div>
@@ -119,8 +119,8 @@ Issues are very welcome; for anything more, please open an issue first.
 
 ## 👁️ See also
 
-- [Iris](https://github.com/SgtSwagrid/Iris), a sibling, a provider-agnostic client for large language models, and so for judges.
-- [Hecate](https://github.com/SgtSwagrid/Hecate), a sibling, for user accounts, sessions, groups and permissions.
-- [Eunomia](https://github.com/SgtSwagrid/Eunomia), a sibling, for filtering, ordering and paging lists.
+- [Iris](https://github.com/SgtSwagrid/iris), a sibling, a provider-agnostic client for large language models, and so for judges.
+- [Hecate](https://github.com/SgtSwagrid/hecate), a sibling, for user accounts, sessions, groups and permissions.
+- [Eunomia](https://github.com/SgtSwagrid/eunomia), a sibling, for filtering, ordering and paging lists.
 - [qr4s](https://github.com/SgtSwagrid/qr4s), a sibling, for generating QR codes, on the JVM and in the browser.
 - This library was made using [Scala Library Template](https://github.com/SgtSwagrid/scala-library-template).
