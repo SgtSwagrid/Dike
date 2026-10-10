@@ -1,7 +1,7 @@
 ThisBuild / description :=
   "Ranking by pairwise comparison in Scala, with any judge, from a model to a match."
 
-ThisBuild / homepage := Some(uri("https://github.com/SgtSwagrid/Dike"))
+ThisBuild / homepage := Some(uri("https://github.com/SgtSwagrid/dike"))
 
 ThisBuild / organization         := "com.alecdorrington"
 ThisBuild / organizationName     := "SgtSwagrid"
